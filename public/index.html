@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot FISS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>🤖 ChatBot FISS</h2>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <div class="message-content">
+                    Xin chào! Tôi là trợ lý ảo của bạn. Hôm nay tôi có thể giúp gì cho bạn?
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <div class="suggestions-container" id="suggestionsContainer">
+                <div class="suggestions-label">💡 Câu hỏi đề xuất:</div>
+                <div class="suggestions-grid" id="suggestionsGrid">
+                    <!-- Suggestions sẽ được thêm bằng JavaScript -->
+                </div>
+            </div>
+            <div class="input-wrapper">
+                <input
+                    type="text"
+                    id="messageInput"
+                    placeholder="Nhập tin nhắn của bạn ở đây..."
+                    maxlength="1000"
+                >
+                <button id="sendButton" class="send-button">
+                    📤
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
