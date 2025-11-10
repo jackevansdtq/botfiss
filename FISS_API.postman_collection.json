@@ -1,0 +1,144 @@
+{
+	"info": {
+		"_postman_id": "fiss-api-collection",
+		"name": "FISS API Collection",
+		"description": "Collection để test FISS Chatbot API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Chat - Blocking Mode",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer app-Pt0aXTFxOM650QpcFSrA7CCn",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"query\": \"Xin chào\",\n    \"inputs\": {},\n    \"response_mode\": \"blocking\",\n    \"user\": \"user-123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://api.thegioiaiagent.online/v1/chat-messages",
+					"protocol": "http",
+					"host": [
+						"api",
+						"thegioiaiagent",
+						"online"
+					],
+					"path": [
+						"v1",
+						"chat-messages"
+					]
+				},
+				"description": "Gọi API với blocking mode - nhận response ngay lập tức"
+			},
+			"response": []
+		},
+		{
+			"name": "Chat - Streaming Mode",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer app-Pt0aXTFxOM650QpcFSrA7CCn",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"query\": \"Bảo hiểm xe máy là gì?\",\n    \"inputs\": {},\n    \"response_mode\": \"streaming\",\n    \"user\": \"user-123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://api.thegioiaiagent.online/v1/chat-messages",
+					"protocol": "http",
+					"host": [
+						"api",
+						"thegioiaiagent",
+						"online"
+					],
+					"path": [
+						"v1",
+						"chat-messages"
+					]
+				},
+				"description": "Gọi API với streaming mode - nhận response theo từng chunk"
+			},
+			"response": []
+		},
+		{
+			"name": "Chat - Với Conversation ID",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer app-Pt0aXTFxOM650QpcFSrA7CCn",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"query\": \"Bảo hiểm ô tô là gì?\",\n    \"inputs\": {},\n    \"conversation_id\": \"{{conversation_id}}\",\n    \"response_mode\": \"streaming\",\n    \"user\": \"user-123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://api.thegioiaiagent.online/v1/chat-messages",
+					"protocol": "http",
+					"host": [
+						"api",
+						"thegioiaiagent",
+						"online"
+					],
+					"path": [
+						"v1",
+						"chat-messages"
+					]
+				},
+				"description": "Gọi API với conversation_id để tiếp tục cuộc trò chuyện. Thay {{conversation_id}} bằng ID từ response trước đó."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "conversation_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+
