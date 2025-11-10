@@ -7,11 +7,11 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 6490;
 
-// Cấu hình API Dify
-const DIFY_BASE_URL = process.env.DIFY_BASE_URL || 'http://api.thegioiaiagent.online';
-const DIFY_API_URL = process.env.DIFY_API_URL || `${DIFY_BASE_URL}/v1/chat-messages`;
-const DIFY_API_KEY = process.env.DIFY_API_KEY || 'app-Pt0aXTFxOM650QpcFSrA7CCn';
-const DIFY_WORKFLOW_ID = process.env.DIFY_WORKFLOW_ID || '561bd084-a397-4f2b-a3de-91255b6d2f6c';
+// Cấu hình API FISS
+const FISS_BASE_URL = process.env.FISS_BASE_URL || 'http://api.thegioiaiagent.online';
+const FISS_API_URL = process.env.FISS_API_URL || `${FISS_BASE_URL}/v1/chat-messages`;
+const FISS_API_KEY = process.env.FISS_API_KEY || 'app-Pt0aXTFxOM650QpcFSrA7CCn';
+const FISS_WORKFLOW_ID = process.env.FISS_WORKFLOW_ID || '561bd084-a397-4f2b-a3de-91255b6d2f6c';
 
 // Middleware
 app.use(cors());
@@ -77,10 +77,10 @@ app.post('/api/chat', async (req, res) => {
             });
         }
 
-        // Chuẩn bị dữ liệu cho API Dify
+        // Chuẩn bị dữ liệu cho API FISS
         // Lưu ý: /v1/chat-messages là cho CHAT APP, không hỗ trợ workflow_id
         // workflow_id chỉ dùng cho /v1/workflows/run (workflow app)
-        const difyData = {
+        const fissData = {
             query: message.trim(),
             inputs: {},
             response_mode: 'streaming',
@@ -89,30 +89,30 @@ app.post('/api/chat', async (req, res) => {
         };
         
         // Chỉ thêm workflow_id nếu endpoint là workflow (không phải chat-messages)
-        if (DIFY_API_URL.includes('/workflows/') && DIFY_WORKFLOW_ID) {
-            difyData.workflow_id = DIFY_WORKFLOW_ID;
+        if (FISS_API_URL.includes('/workflows/') && FISS_WORKFLOW_ID) {
+            fissData.workflow_id = FISS_WORKFLOW_ID;
         }
 
         // Cấu hình headers
         const headers = {
-            'Authorization': `Bearer ${DIFY_API_KEY}`,
+            'Authorization': `Bearer ${FISS_API_KEY}`,
             'Content-Type': 'application/json'
         };
 
         // Log request để debug
         if (process.env.NODE_ENV === 'development') {
-            console.log('📤 Gửi request đến Dify:', {
-                url: DIFY_API_URL,
-                endpoint_type: DIFY_API_URL.includes('/workflows/') ? 'workflow' : 'chat',
-                has_workflow_id: !!difyData.workflow_id,
+            console.log('📤 Gửi request đến FISS:', {
+                url: FISS_API_URL,
+                endpoint_type: FISS_API_URL.includes('/workflows/') ? 'workflow' : 'chat',
+                has_workflow_id: !!fissData.workflow_id,
                 conversation_id: conversationId || '(mới)'
             });
         }
 
-        // Thực hiện yêu cầu đến Dify
+        // Thực hiện yêu cầu đến FISS
         let response;
         try {
-            response = await axios.post(DIFY_API_URL, difyData, {
+            response = await axios.post(FISS_API_URL, fissData, {
                 headers,
                 responseType: 'stream',
                 timeout: 30000
@@ -123,7 +123,7 @@ app.post('/api/chat', async (req, res) => {
                 const statusText = axiosError.response.statusText;
                 
                 // Đọc error response
-                let errorMessage = `Lỗi API Dify: ${status} - ${statusText}`;
+                let errorMessage = `Lỗi API FISS: ${status} - ${statusText}`;
                 let errorDetails = null;
                 
                 // Đọc error response (có thể là JSON hoặc text)
@@ -147,11 +147,11 @@ app.post('/api/chat', async (req, res) => {
                     }
                 }
                 
-                console.error('❌ Lỗi từ Dify API:', {
+                console.error('❌ Lỗi từ FISS API:', {
                     status,
                     statusText,
-                    url: DIFY_API_URL,
-                    workflow_id: DIFY_WORKFLOW_ID,
+                    url: FISS_API_URL,
+                    workflow_id: FISS_WORKFLOW_ID,
                     errorDetails
                 });
                 
@@ -164,9 +164,9 @@ app.post('/api/chat', async (req, res) => {
             }
             
             // Lỗi network hoặc timeout
-            console.error('❌ Lỗi kết nối đến Dify API:', axiosError.message);
+            console.error('❌ Lỗi kết nối đến FISS API:', axiosError.message);
             res.status(500).json({
-                error: `Lỗi kết nối đến Dify API: ${axiosError.message}`
+                error: `Lỗi kết nối đến FISS API: ${axiosError.message}`
             });
             return;
         }
@@ -197,7 +197,7 @@ app.post('/api/chat', async (req, res) => {
                         
                         // Log để debug
                         if (process.env.NODE_ENV === 'development') {
-                            console.log('Dify event:', data.event, data);
+                            console.log('FISS event:', data.event, data);
                         }
 
                         if (data.event === 'agent_message' || data.event === 'message' || data.event === 'message_file' || data.event === 'node_started' || data.event === 'node_finished') {
@@ -235,15 +235,15 @@ app.post('/api/chat', async (req, res) => {
                         } else if (data.event === 'error' || data.event === 'workflow_started') {
                             // Xử lý các event khác
                             if (data.event === 'error') {
-                                console.error('Lỗi từ Dify API:', data);
+                                console.error('Lỗi từ FISS API:', data);
                                 res.write(`data: ${JSON.stringify({
                                     type: 'error',
-                                    error: data.message || 'Lỗi từ Dify API'
+                                    error: data.message || 'Lỗi từ FISS API'
                                 })}\n\n`);
                             }
                         }
                     } catch (parseError) {
-                        console.warn('Lỗi phân tích chunk phản hồi từ Dify:', parseError, 'Line:', line);
+                        console.warn('Lỗi phân tích chunk phản hồi từ FISS:', parseError, 'Line:', line);
                     }
                 } else if (line.trim()) {
                     // Log các dòng không phải SSE format
@@ -274,9 +274,9 @@ app.post('/api/chat', async (req, res) => {
         let statusCode = 500;
 
         if (error.response) {
-            // Lỗi từ API Dify
+            // Lỗi từ API FISS
             statusCode = error.response.status;
-            errorMessage = `Lỗi API Dify: ${error.response.status} - ${error.response.statusText}`;
+            errorMessage = `Lỗi API FISS: ${error.response.status} - ${error.response.statusText}`;
         } else if (error.code === 'ECONNABORTED') {
             // Timeout
             statusCode = 408;
@@ -333,8 +333,8 @@ const server = app.listen(PORT, () => {
     console.log(`🚀 Máy chủ chatbot đang chạy tại http://localhost:${PORT}`);
     console.log(`📱 Mở trình duyệt của bạn tại http://localhost:${PORT}`);
     console.log(`🔧 Chế độ: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`📡 API Dify: ${DIFY_API_URL}`);
-    console.log(`🔄 Workflow ID: ${DIFY_WORKFLOW_ID}`);
+    console.log(`📡 API FISS: ${FISS_API_URL}`);
+    console.log(`🔄 Workflow ID: ${FISS_WORKFLOW_ID}`);
 });
 
 server.on('error', (err) => {

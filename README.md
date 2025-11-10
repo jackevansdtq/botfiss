@@ -1,6 +1,6 @@
-# 🤖 ChatBot Web với Dify - Node.js
+# 🤖 ChatBot Web với FISS - Node.js
 
-Một chatbot web hiện đại được xây dựng bằng Node.js và Express tích hợp với API Dify để cung cấp phản hồi AI theo thời gian thực.
+Một chatbot web hiện đại được xây dựng bằng Node.js và Express tích hợp với API FISS để cung cấp phản hồi AI theo thời gian thực.
 
 ## 🚀 Tính năng
 
@@ -45,10 +45,10 @@ Một chatbot web hiện đại được xây dựng bằng Node.js và Express 
    Tạo tệp `.env` trong thư mục gốc của dự án:
    ```env
    PORT=6490
-   DIFY_BASE_URL=http://api.thegioiaiagent.online
-   DIFY_API_URL=http://api.thegioiaiagent.online/v1/chat-messages
-   DIFY_API_KEY=app-Pt0aXTFxOM650QpcFSrA7CCn
-   DIFY_WORKFLOW_ID=561bd084-a397-4f2b-a3de-91255b6d2f6c
+   FISS_BASE_URL=http://api.thegioiaiagent.online
+   FISS_API_URL=http://api.thegioiaiagent.online/v1/chat-messages
+   FISS_API_KEY=app-Pt0aXTFxOM650QpcFSrA7CCn
+   FISS_WORKFLOW_ID=561bd084-a397-4f2b-a3de-91255b6d2f6c
    NODE_ENV=development
    ```
 
@@ -72,9 +72,9 @@ node server.js
 
 | Biến | Mô tả | Giá trị mặc định |
 |-------|--------|------------------|
-| `DIFY_API_URL` | URL API của Dify | `http://api.thegioiaiagent.online/v1/chat-messages` |
-| `DIFY_API_KEY` | Khóa API của Dify | `app-Pt0aXTFxOM650QpcFSrA7CCn` |
-| `DIFY_WORKFLOW_ID` | ID của workflow trong Dify | `561bd084-a397-4f2b-a3de-91255b6d2f6c` |
+| `FISS_API_URL` | URL API của FISS | `http://api.thegioiaiagent.online/v1/chat-messages` |
+| `FISS_API_KEY` | Khóa API của FISS | `app-Pt0aXTFxOM650QpcFSrA7CCn` |
+| `FISS_WORKFLOW_ID` | ID của workflow trong FISS | `561bd084-a397-4f2b-a3de-91255b6d2f6c` |
 | `PORT` | Cổng của máy chủ | `6490` |
 | `NODE_ENV` | Môi trường thực thi | `development` |
 
@@ -98,7 +98,7 @@ Lấy lịch sử của một cuộc trò chuyện cụ thể.
 
 ### Kiến trúc
 
-- **Backend (Node.js/Express)**: Xử lý giao tiếp với Dify API và streaming
+- **Backend (Node.js/Express)**: Xử lý giao tiếp với FISS API và streaming
 - **Frontend (Vanilla JS)**: Giao diện người dùng với Server-Sent Events
 - **Streaming**: Sử dụng Server-Sent Events cho phản hồi thời gian thực
 - **Lưu trữ**: Cuộc trò chuyện trong bộ nhớ (Map), với dọn dẹp tự động
@@ -145,7 +145,7 @@ Lấy lịch sử của một cuộc trò chuyện cụ thể.
 ### Backend
 - **Node.js**: Môi trường thực thi JavaScript
 - **Express.js**: Framework web tối giản
-- **Axios**: Client HTTP để giao tiếp với Dify
+- **Axios**: Client HTTP để giao tiếp với FISS
 - **CORS**: Middleware để chia sẻ tài nguyên giữa các nguồn gốc
 - **dotenv**: Tải biến môi trường
 
@@ -187,11 +187,11 @@ PORT=3001
 3. Truy cập `http://localhost:6490` để test kết nối
 4. Kiểm tra console trình duyệt để xem lỗi chi tiết
 
-### Lỗi kết nối với Dify
+### Lỗi kết nối với FISS
 1. Kiểm tra URL API có đúng không: `http://api.thegioiaiagent.online/v1/chat-messages`
 2. Xác nhận API key hợp lệ
 3. Kiểm tra console của máy chủ để xem log lỗi
-4. Kiểm tra kết nối mạng đến API Dify
+4. Kiểm tra kết nối mạng đến API FISS
 
 ### Vấn đề streaming
 - Đảm bảo trình duyệt hỗ trợ Server-Sent Events
@@ -218,7 +218,7 @@ PORT=3001
 
 ### Số liệu điển hình:
 - **Khởi động máy chủ**: < 1 giây
-- **Phản hồi đầu tiên**: 2-5 giây (phụ thuộc vào Dify)
+- **Phản hồi đầu tiên**: 2-5 giây (phụ thuộc vào FISS)
 - **Streaming**: Phản hồi thời gian thực
 - **Bộ nhớ**: ~50MB cho 100 cuộc trò chuyện hoạt động
 
@@ -264,4 +264,4 @@ Hãy thoải mái cải thiện mã:
 4. Push lên nhánh (`git push origin feature/tinh-nang-moi`)
 5. Mở Pull Request
 
-¡Hãy tận hưởng chatbot của bạn với Dify và Node.js! 🚀🎉
+¡Hãy tận hưởng chatbot của bạn với FISS và Node.js! 🚀🎉

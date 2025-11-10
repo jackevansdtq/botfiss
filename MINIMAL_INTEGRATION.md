@@ -5,9 +5,9 @@ Nếu bạn chỉ gửi **3 dòng cấu hình** cho backend team, họ **KHÔNG 
 ## ❌ Chỉ có cấu hình KHÔNG ĐỦ:
 
 ```env
-DIFY_BASE_URL=http://api.thegioiaiagent.online
-DIFY_API_URL=http://api.thegioiaiagent.online/v1/chat-messages
-DIFY_API_KEY=app-Pt0aXTFxOM650QpcFSrA7CCn
+FISS_BASE_URL=http://api.thegioiaiagent.online
+FISS_API_URL=http://api.thegioiaiagent.online/v1/chat-messages
+FISS_API_KEY=app-Pt0aXTFxOM650QpcFSrA7CCn
 ```
 
 ---
@@ -26,12 +26,12 @@ Copy đoạn code này vào dự án của họ:
 ```javascript
 const axios = require('axios');
 
-const DIFY_API_URL = process.env.DIFY_API_URL || 'http://api.thegioiaiagent.online/v1/chat-messages';
-const DIFY_API_KEY = process.env.DIFY_API_KEY || 'app-Pt0aXTFxOM650QpcFSrA7CCn';
+const FISS_API_URL = process.env.FISS_API_URL || 'http://api.thegioiaiagent.online/v1/chat-messages';
+const FISS_API_KEY = process.env.FISS_API_KEY || 'app-Pt0aXTFxOM650QpcFSrA7CCn';
 
-async function sendToDifyChatbot(message, conversationId = '', userId = '') {
+async function sendToFISSChatbot(message, conversationId = '', userId = '') {
     const response = await axios.post(
-        DIFY_API_URL,
+        FISS_API_URL,
         {
             query: message.trim(),
             conversation_id: conversationId,
@@ -40,7 +40,7 @@ async function sendToDifyChatbot(message, conversationId = '', userId = '') {
         },
         {
             headers: {
-                'Authorization': `Bearer ${DIFY_API_KEY}`,
+                'Authorization': `Bearer ${FISS_API_KEY}`,
                 'Content-Type': 'application/json'
             },
             responseType: 'stream',
@@ -77,7 +77,7 @@ async function sendToDifyChatbot(message, conversationId = '', userId = '') {
                                 conversationId: finalConversationId
                             });
                         } else if (data.event === 'error') {
-                            reject(new Error(data.message || 'Lỗi từ Dify API'));
+                            reject(new Error(data.message || 'Lỗi từ FISS API'));
                         }
                     } catch (e) {
                         // Bỏ qua
@@ -92,16 +92,16 @@ async function sendToDifyChatbot(message, conversationId = '', userId = '') {
     });
 }
 
-module.exports = { sendToDifyChatbot };
+module.exports = { sendToFISSChatbot };
 ```
 
 ### 3. **Cách sử dụng**
 
 ```javascript
-const { sendToDifyChatbot } = require('./dify-api');
+const { sendToFISSChatbot } = require('./fiss-api');
 
 // Sử dụng
-const result = await sendToDifyChatbot(
+const result = await sendToFISSChatbot(
     'Bảo hiểm xe máy là gì?',
     '', // conversationId (để trống nếu mới)
     'user-123' // userId

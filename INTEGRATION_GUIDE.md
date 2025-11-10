@@ -16,14 +16,14 @@ yarn add axios
 
 ---
 
-## 🔑 2. Cấu hình API Dify
+## 🔑 2. Cấu hình API FISS
 
 Thêm vào file `.env` hoặc config của bạn:
 
 ```env
-DIFY_BASE_URL=http://api.thegioiaiagent.online
-DIFY_API_URL=http://api.thegioiaiagent.online/v1/chat-messages
-DIFY_API_KEY=app-Pt0aXTFxOM650QpcFSrA7CCn
+FISS_BASE_URL=http://api.thegioiaiagent.online
+FISS_API_URL=http://api.thegioiaiagent.online/v1/chat-messages
+FISS_API_KEY=app-Pt0aXTFxOM650QpcFSrA7CCn
 ```
 
 ---
@@ -39,11 +39,11 @@ const axios = require('axios');
 require('dotenv').config();
 
 // Cấu hình
-const DIFY_API_URL = process.env.DIFY_API_URL || 'http://api.thegioiaiagent.online/v1/chat-messages';
-const DIFY_API_KEY = process.env.DIFY_API_KEY || 'app-Pt0aXTFxOM650QpcFSrA7CCn';
+const FISS_API_URL = process.env.FISS_API_URL || 'http://api.thegioiaiagent.online/v1/chat-messages';
+const FISS_API_KEY = process.env.FISS_API_KEY || 'app-Pt0aXTFxOM650QpcFSrA7CCn';
 
 /**
- * Gửi tin nhắn đến Dify Chatbot
+ * Gửi tin nhắn đến FISS Chatbot
  * @param {string} message - Nội dung tin nhắn
  * @param {string} conversationId - ID cuộc trò chuyện (tùy chọn)
  * @param {string} userId - ID người dùng (tùy chọn)
@@ -51,10 +51,10 @@ const DIFY_API_KEY = process.env.DIFY_API_KEY || 'app-Pt0aXTFxOM650QpcFSrA7CCn';
  * @param {Function} onComplete - Callback khi hoàn tất (fullResponse, conversationId)
  * @param {Function} onError - Callback khi có lỗi (error)
  */
-async function sendToDifyChatbot(message, conversationId = '', userId = '', onChunk, onComplete, onError) {
+async function sendToFISSChatbot(message, conversationId = '', userId = '', onChunk, onComplete, onError) {
     try {
         const response = await axios.post(
-            DIFY_API_URL,
+            FISS_API_URL,
             {
                 query: message.trim(),
                 conversation_id: conversationId,
@@ -63,7 +63,7 @@ async function sendToDifyChatbot(message, conversationId = '', userId = '', onCh
             },
             {
                 headers: {
-                    'Authorization': `Bearer ${DIFY_API_KEY}`,
+                    'Authorization': `Bearer ${FISS_API_KEY}`,
                     'Content-Type': 'application/json'
                 },
                 responseType: 'stream',
@@ -97,7 +97,7 @@ async function sendToDifyChatbot(message, conversationId = '', userId = '', onCh
                             }
                             if (onComplete) onComplete(fullResponse, finalConversationId);
                         } else if (data.event === 'error') {
-                            const error = new Error(data.message || 'Lỗi từ Dify API');
+                            const error = new Error(data.message || 'Lỗi từ FISS API');
                             if (onError) onError(error);
                             throw error;
                         }
@@ -121,7 +121,7 @@ async function sendToDifyChatbot(message, conversationId = '', userId = '', onCh
     } catch (error) {
         if (error.response) {
             const status = error.response.status;
-            const errorMsg = `Lỗi API Dify: ${status}`;
+            const errorMsg = `Lỗi API FISS: ${status}`;
             if (onError) onError(new Error(errorMsg));
         } else {
             if (onError) onError(error);
@@ -130,16 +130,16 @@ async function sendToDifyChatbot(message, conversationId = '', userId = '', onCh
     }
 }
 
-module.exports = { sendToDifyChatbot };
+module.exports = { sendToFISSChatbot };
 ```
 
 ### Cách sử dụng:
 
 ```javascript
-const { sendToDifyChatbot } = require('./dify-api');
+const { sendToFISSChatbot } = require('./fiss-api');
 
 // Sử dụng
-sendToDifyChatbot(
+sendToFISSChatbot(
     'Bảo hiểm xe máy là gì?',
     '', // conversationId (để trống nếu mới)
     'user-123', // userId
@@ -172,8 +172,8 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-const DIFY_API_URL = process.env.DIFY_API_URL || 'http://api.thegioiaiagent.online/v1/chat-messages';
-const DIFY_API_KEY = process.env.DIFY_API_KEY || 'app-Pt0aXTFxOM650QpcFSrA7CCn';
+const FISS_API_URL = process.env.FISS_API_URL || 'http://api.thegioiaiagent.online/v1/chat-messages';
+const FISS_API_KEY = process.env.FISS_API_KEY || 'app-Pt0aXTFxOM650QpcFSrA7CCn';
 
 router.post('/chat', async (req, res) => {
     try {
@@ -184,7 +184,7 @@ router.post('/chat', async (req, res) => {
         }
 
         const response = await axios.post(
-            DIFY_API_URL,
+            FISS_API_URL,
             {
                 query: message.trim(),
                 conversation_id: conversationId || '',
@@ -193,7 +193,7 @@ router.post('/chat', async (req, res) => {
             },
             {
                 headers: {
-                    'Authorization': `Bearer ${DIFY_API_KEY}`,
+                    'Authorization': `Bearer ${FISS_API_KEY}`,
                     'Content-Type': 'application/json'
                 },
                 responseType: 'stream',
@@ -242,7 +242,7 @@ router.post('/chat', async (req, res) => {
                         } else if (data.event === 'error') {
                             res.write(`data: ${JSON.stringify({
                                 type: 'error',
-                                error: data.message || 'Lỗi từ Dify API'
+                                error: data.message || 'Lỗi từ FISS API'
                             })}\n\n`);
                             res.end();
                         }
@@ -278,7 +278,7 @@ module.exports = router;
 ### ✅ Bắt buộc:
 1. **Dependencies**: `axios`
 2. **Cấu hình**: API URL và API Key
-3. **Code logic**: Function gọi API Dify (từ `server.js` dòng 48-291)
+3. **Code logic**: Function gọi API FISS (từ `server.js` dòng 48-291)
 
 ### ✅ Tùy chọn:
 - Xử lý streaming response
@@ -289,7 +289,7 @@ module.exports = router;
 
 ## 🎯 File cần tham khảo trong dự án này
 
-1. **`server.js`** (dòng 48-291): Logic chính gọi API Dify
+1. **`server.js`** (dòng 48-291): Logic chính gọi API FISS
 2. **`package.json`**: Dependencies cần thiết
 3. **`.env`**: Cấu hình API (không commit)
 
@@ -300,8 +300,8 @@ module.exports = router;
 - **API Key**: Không commit API Key vào Git, dùng biến môi trường
 - **Streaming**: API trả về Server-Sent Events, cần xử lý stream
 - **Conversation ID**: Lưu lại để duy trì ngữ cảnh cuộc trò chuyện
-- **Error Handling**: Luôn xử lý lỗi từ API Dify
+- **Error Handling**: Luôn xử lý lỗi từ API FISS
 
 ---
 
-**Tóm lại:** Bạn chỉ cần copy logic từ `server.js` (phần gọi API Dify) và cấu hình API Key là đủ!
+**Tóm lại:** Bạn chỉ cần copy logic từ `server.js` (phần gọi API FISS) và cấu hình API Key là đủ!
