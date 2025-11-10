@@ -135,6 +135,11 @@ function escapeHtml(text) {
 
 // Hàm xử lý inline formatting (bold, italic, code)
 function processInlineFormatting(text) {
+    if (!text) return '';
+    
+    // Đảm bảo text là string và có encoding đúng
+    text = String(text);
+    
     const placeholders = new Map();
     let placeholderIndex = 0;
     
@@ -145,22 +150,22 @@ function processInlineFormatting(text) {
         return placeholder;
     }
     
-    // Bảo vệ code blocks trước
-    text = text.replace(/`([^`]+)`/g, (match, code) => {
+    // Bảo vệ code blocks trước (thêm flag 'u' để hỗ trợ Unicode)
+    text = text.replace(/`([^`]+)`/gu, (match, code) => {
         const placeholder = getPlaceholder('CODE');
         placeholders.set(placeholder, `<code>${escapeHtml(code)}</code>`);
         return placeholder;
     });
     
-    // Xử lý bold
-    text = text.replace(/\*\*(.+?)\*\*/g, (match, bold) => {
+    // Xử lý bold (thêm flag 'u' để hỗ trợ Unicode)
+    text = text.replace(/\*\*(.+?)\*\*/gu, (match, bold) => {
         const placeholder = getPlaceholder('BOLD');
         placeholders.set(placeholder, `<strong>${escapeHtml(bold)}</strong>`);
         return placeholder;
     });
     
-    // Xử lý italic (sau khi đã xử lý bold, chỉ còn lại single *)
-    text = text.replace(/\*([^*]+?)\*/g, (match, italic) => {
+    // Xử lý italic (sau khi đã xử lý bold, chỉ còn lại single *) - thêm flag 'u'
+    text = text.replace(/\*([^*\n]+?)\*/gu, (match, italic) => {
         const placeholder = getPlaceholder('ITALIC');
         placeholders.set(placeholder, `<em>${escapeHtml(italic)}</em>`);
         return placeholder;
@@ -169,9 +174,11 @@ function processInlineFormatting(text) {
     // Escape HTML cho phần còn lại
     text = escapeHtml(text);
     
-    // Khôi phục placeholders
+    // Khôi phục placeholders (dùng replace với function để tránh lỗi)
     placeholders.forEach((replacement, placeholder) => {
-        text = text.replace(placeholder, replacement);
+        // Escape placeholder để tránh conflict
+        const escapedPlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        text = text.replace(new RegExp(escapedPlaceholder, 'g'), replacement);
     });
     
     return text;
@@ -228,8 +235,8 @@ function renderMarkdown(text) {
             continue;
         }
         
-        // Lists
-        const listMatch = trimmed.match(/^(\d+\.\s+|-\s+)(.+)$/);
+        // Lists (thêm flag 'u' để hỗ trợ Unicode)
+        const listMatch = trimmed.match(/^(\d+\.\s+|-\s+)(.+)$/u);
         if (listMatch) {
             if (inParagraph) { result.push('</p>'); inParagraph = false; }
             if (!inList) { result.push('<ul>'); inList = true; }
@@ -438,7 +445,8 @@ async function sendMessage(message) {
 
         // Xử lý streaming response
         const reader = response.body.getReader();
-        const decoder = new TextDecoder();
+        // Đảm bảo decode với UTF-8 encoding
+        const decoder = new TextDecoder('utf-8', { fatal: false, ignoreBOM: true });
         let buffer = '';
         let fullResponse = '';
         let hasReceivedData = false;

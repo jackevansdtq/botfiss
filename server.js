@@ -184,7 +184,9 @@ app.post('/api/chat', async (req, res) => {
         // Xử lý stream phản hồi
         let buffer = '';
         response.data.on('data', (chunk) => {
-            buffer += chunk.toString();
+            // Đảm bảo decode với UTF-8 encoding
+            const text = Buffer.isBuffer(chunk) ? chunk.toString('utf-8') : String(chunk);
+            buffer += text;
             const lines = buffer.split('\n');
             buffer = lines.pop() || ''; // Giữ lại phần chưa hoàn chỉnh
 
